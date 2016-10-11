@@ -3,13 +3,15 @@
 import pyAgrum as gum
 
 from ApproxInference import MonteCarlo
+from ApproxInference import utils
+from ApproxInference import Weighted
 
 
-def multipleMontecarlo(bn, evs,N=5):
+def multipleMontecarlo(bn, evs, N=5):
   for i in range(1, N + 1):
     print()
     print("==> montecarlo {}/{}".format(i, N))
-    m = MonteCarlo(bn,evs)
+    m = MonteCarlo(bn, evs)
     m.run(1e-1, 50, verbose=True)
 
     for n in ["P3.Duration", "R3.Cost2", "A3.Productivity1"]:
@@ -37,7 +39,18 @@ def transform():
 
 
 if __name__ == '__main__':
-  transform()
+  # transform()
   bn = gum.loadBN("data/test_level_0_1.bif")
   print("BN loaded")
-  multipleMontecarlo(bn,evs={})
+  scenario = {'E5.ValueEE': 6,
+              'E4.ValueEE': 6,
+              'Ac3.Duration': 3,
+              'A1.Productivity': 6}
+  # ,'E3.ValueEE':6}#'E1.Agg': 0, 'E3.Agg': 0, 'E4.Agg': 1, 'E5.Agg': 2}#,'E6.Agg':0}
+  # scenario={'E5.ValueEE':6}
+  print('ok 1')
+  m = Weighted(bn, scenario, verbose=True)
+
+  # m = MonteCarlo(bn, scenario,verbose=True)
+  print('ok')
+  m.run(1e-2, 50)

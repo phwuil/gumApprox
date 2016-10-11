@@ -13,6 +13,10 @@ class GenericInference:
     self._originalevs = evs
     self._bn, self._evs = utils.mutilate(bn, evs)
     self._verbose = verbose
+    if self._verbose:
+      print("Mutilation done")
+      print("  - dimension from {} to {}".format(self._originalbn.dim(), self._bn.dim()))
+      print("  - evs from {} to {}".format(len(self._originalevs), len(self._evs)))
 
 
 class GenericSamplerInference(GenericInference):
@@ -33,11 +37,12 @@ class GenericSamplerInference(GenericInference):
     else:
       return self._estimators[i].value()
 
-  def results(self, i):
-    if self._originalbn.variable(i).name() in self._originalevs:
-      return utils.deterministicPotential(self._originalbn.variable(i),
-                                          self._originalevs[self._originalbn.variable(i).name()]) \
-        , 1.0
-    else:
-      return self._estimators[i].value() \
-        , self._estimators[i].confidence()
+
+def results(self, i):
+  if self._originalbn.variable(i).name() in self._originalevs:
+    return utils.deterministicPotential(self._originalbn.variable(i),
+                                        self._originalevs[self._originalbn.variable(i).name()]) \
+      , 1.0
+  else:
+    return self._estimators[i].value() \
+      , self._estimators[i].confidence()

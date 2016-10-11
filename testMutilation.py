@@ -3,6 +3,7 @@
 import pyAgrum as gum
 
 from ApproxInference.utils import isAlmostEqualPot, mutilate
+from ApproxInference import MonteCarlo
 
 
 def test1(bn1):
@@ -51,7 +52,7 @@ def test2(bn1):
   if "HYPOVOLEMIA" in evs2:
     print("- HYPOVOLEMIA should not be in evs2")
   try:
-    i=bn2.idFromName("HYPOVOLEMIA")
+    i = bn2.idFromName("HYPOVOLEMIA")
     print("- HYPOVOLEMIA should not be in bn2")
   except:
     pass
@@ -88,6 +89,16 @@ def test2(bn1):
   else:
     print("No error : inference results are identical.")
 
+
+def test3(bn1):
+  print("=====")
+  print("TEST3")
+  print("=====")
+
+  evs = {"HYPOVOLEMIA": 0, "CATECHOL": 1, "INTUBATION": 0}
+  m = MonteCarlo(bn1, evs)
+
+
 # This file to test utils.mutilate
 def main():
   bn1 = gum.loadBN("data/alarm.bif")
@@ -96,6 +107,8 @@ def main():
   test1(bn1)
   print()
   test2(bn1)
+  print()
+  test3(bn1)
 
 
 if __name__ == '__main__':
