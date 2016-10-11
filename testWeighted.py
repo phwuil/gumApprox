@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import pyAgrum as gum
 
-from ApproxInference import MonteCarlo
+from ApproxInference import Weighted
 from ApproxInference import utils
 
 
@@ -11,7 +11,7 @@ def main():
 
   evs = {"HR": 1, "PAP": 2}
 
-  m = MonteCarlo(bn, evs, verbose=True)
+  m = Weighted(bn, evs, verbose=True)
   m.run(5e-2, 20)
 
   print("done")

@@ -6,7 +6,7 @@ from .infGenericSampler import GenericSamplerInference
 from .probabilityEstimator import ProbabilityEstimator
 
 
-class MonteCarlo(GenericSamplerInference):
+class Weighted(GenericSamplerInference):
   def __init__(self, bn, evs, verbose=True):
     super().__init__(bn, evs, verbose)
     self._nbrReject = 0
@@ -21,21 +21,33 @@ class MonteCarlo(GenericSamplerInference):
       self._nbr += 1
       currentPotentials = {}
       proba = {}
+
+      # simple sampling w.r.t. the BN
+      inst = {}
       for i in self._bn.topologicalOrder():
         name = self._bn.variable(i).name()
         q = gum.Potential(self._bn.cpt(i))
         for j in self._bn.parents(i):
           q *= currentPotentials[j]
         q = q.margSumIn([name])
-        v, currentPotentials[i] = utils.draw(q)
-        if name in self._evs:
-          if v != self._evs[name]:
-            self._nbrReject += 1
-            return False
-        else:
+        inst[name], currentPotentials[i] = utils.draw(q)
+        if name not in self._evs:
           proba[i] = q
+
+      # forcing the value of evidence and compute the probability of this forces instance
+      globalProba = 1.0
+      for i in self._bn.topologicalOrder():
+        name = self._bn.variable(i).name()
+        if name in self._evs:
+          inst[name] = self._evs[name]
+        localp = self._bn.cpt(i)[inst]
+        if localp == 0:
+          return False
+        globalProba *= localp
+
+      print("{} : {}",inst,globalProba)
       for i in proba.keys():
-        estimators[i].add(proba[i])
+        estimators[i].add(proba[i], globalProba)
       return True
 
     for i in range(size):

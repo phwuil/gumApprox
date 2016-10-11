@@ -37,30 +37,20 @@ def KL(p, q):
 def draw(p):
   """
   Draw a sample using p
-  :param p: the distribution
+  :param p: a probability distribution over a variable v
   :return: (v,q) where v is the value and q is the deterministic distribution for v
   """
-  q = gum.Potential(p)
   r = random.random()
   i = gum.Instantiation(p)
   val = 0
   while not i.end():
-    if r < 0:
-      q.set(i, 0)
-    else:
-      if r <= p.get(i):
-        val = i.val(0)
-        q.set(i, 1)
-      else:
-        q.set(i, 0)
     r -= p.get(i)
     i.inc()
+    if r <= 0:
+      val = i.val(0)
+      break
 
-  if q.sum() != 1:
-    print("ACHTUNG : {} {}".format(p.sum(), p))
-    print("AND THEN : {}".format(q))
-
-  return val,q
+  return val, deterministicPotential(p.variable(0), val)
 
 
 def argmax(iterable):
