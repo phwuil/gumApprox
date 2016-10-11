@@ -17,18 +17,20 @@ def uniformPotential(v):
 
 def KL(p, q):
   """
-  Compute KL(p,k), Kullback-Leibler divergence
+  Compute KL(p,q), Kullback-Leibler divergence
 
   :param p: gum.Potential
   :param q: gum.Potential
   :return: float
   """
-  I = gum.Instantiation(p)
+  Ip = gum.Instantiation(p)
+  Iq = gum.Instantiation(q)
   s = 0
-  while not I.end():
-    if p.get(I) > 0:
-      s += p.get(I) * math.log2(p.get(I) / q.get(I))
-    I.inc()
+  while not Ip.end():
+    if p.get(Ip) > 0:
+      s += p.get(Ip) * math.log2(p.get(Ip) / q.get(Iq))
+    Ip.inc()
+    Iq.inc()
 
   # it may happen that if p==q, s<0 (approximation)
   return 0 if s <= 0 else s
@@ -67,7 +69,7 @@ def compactPot(p):
   i = gum.Instantiation(p)
   i.setFirst()
   while not i.end():
-    res += "|{:7.3f}".format(100 * p.get(i))
+    res += "|{:7.5f}".format(100 * p.get(i))
     i.inc()
   return "[" + res[1:] + "]"
 
@@ -93,15 +95,23 @@ def mutilate(bn, evs):
   :param evs:
   :return:
   """
+  newbn = gum.BayesNet(bn)
+  newevs = dict(evs)
   for name in evs:
-    nid = bn.idFromName(name)
-    for ch in bn.children(nid):
+    nid = newbn.idFromName(name)
+    for ch in newbn.children(nid):
       # create the new cpt
-      q = bn.cpt(ch) \
+      q = newbn.cpt(ch) \
         .extract({name: evs[name]}) \
         .reorganize([v.name() for v in bn.cpt(ch).variablesSequence() if v.name() != name])
       # erase arc
-      bn.eraseArc(nid, ch)
+      newbn.eraseArc(nid, ch)
       # update cpt
-      bn.cpt(ch)[:] = q[:]
-  return bn
+      newbn.cpt(ch)[:] = q[:]
+
+    # remove evidence without parent
+    if len(newbn.parents(nid)) == 0:
+      newbn.erase(nid)
+      newevs.pop(name)
+
+  return newbn, newevs

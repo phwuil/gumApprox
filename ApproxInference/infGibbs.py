@@ -56,7 +56,7 @@ class Gibbs(GenericSamplerInference):
     def oneRound():
       ids = self._bn.ids()[:]
       random.shuffle(ids)
-      # TODO : select only some ids and not all
+      # todo: select only some ids and not all
       for i in ids:
         name = self._bn.variable(i).name()
         if name not in self._evs:

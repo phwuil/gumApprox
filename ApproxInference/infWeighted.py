@@ -40,12 +40,11 @@ class Weighted(GenericSamplerInference):
         name = self._bn.variable(i).name()
         if name in self._evs:
           inst[name] = self._evs[name]
-        localp = self._bn.cpt(i)[inst]
-        if localp == 0:
-          return False
-        globalProba *= localp
+          localp = self._bn.cpt(i)[inst]
+          if localp == 0:
+            return False
+          globalProba *= localp
 
-      print("{} : {}",inst,globalProba)
       for i in proba.keys():
         estimators[i].add(proba[i], globalProba)
       return True

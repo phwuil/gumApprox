@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import pyAgrum as gum
 
+import testUtils
 from ApproxInference import MonteCarlo
-from ApproxInference import utils
 
 
 def main():
@@ -16,20 +16,7 @@ def main():
 
   print("done")
 
-  ie = gum.LazyPropagation(bn)
-  ie.setEvidence(evs)
-  ie.makeInference()
-
-  for i in bn.ids():
-    v, c = m.results(i)
-    if v is not None:
-      print("{} : {:3.5f}\n    exact  : {}\n    approx : {}  ({:7.5f})".format(bn.variable(i).name(),
-                                                                               utils.KL(ie.posterior(i), v),
-                                                                               utils.compactPot(ie.posterior(i)),
-                                                                               utils.compactPot(v),
-                                                                               c))
-    else:
-      print("{}: {}".format(bn.variable(i).name(), evs[bn.variable(i).name()]))
+  testUtils.compareApprox(m, bn, evs)
 
 
 if __name__ == '__main__':

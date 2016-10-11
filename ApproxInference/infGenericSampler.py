@@ -10,8 +10,8 @@ class GenericInference:
 
   def __init__(self, bn, evs, verbose=True):
     self._originalbn = bn
-    self._evs = evs
-    self._bn = utils.mutilate(bn, evs)
+    self._originalevs = evs
+    self._bn, self._evs = utils.mutilate(bn, evs)
     self._verbose = verbose
 
 
@@ -26,10 +26,18 @@ class GenericSamplerInference(GenericInference):
                         bn.variable(i).name() not in evs}
 
   def posterior(self, i):
-    return None if i not in self._estimators else self._estimators[i].value()
+    v = self._originalbn.variable(i)
+    n = v.name()
+    if n in self._originalevs:
+      return utils.deterministicPotential(v, self._originalevs[n])
+    else:
+      return self._estimators[i].value()
 
   def results(self, i):
-    if i not in self._estimators:
-      return None, None
+    if self._originalbn.variable(i).name() in self._originalevs:
+      return utils.deterministicPotential(self._originalbn.variable(i),
+                                          self._originalevs[self._originalbn.variable(i).name()]) \
+        , 1.0
     else:
-      return self._estimators[i].value(), self._estimators[i].confidence()
+      return self._estimators[i].value() \
+        , self._estimators[i].confidence()
