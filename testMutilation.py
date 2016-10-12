@@ -2,7 +2,7 @@
 
 import pyAgrum as gum
 
-from ApproxInference.utils import isAlmostEqualPot, mutilate
+from ApproxInference.utils import isAlmostEqualPot, conditionalModel
 from ApproxInference import MonteCarlo
 
 
@@ -13,7 +13,7 @@ def test1(bn1):
 
   evs = {"SAO2": 2, "CATECHOL": 1}
   print("EVIDENCES {}".format(evs))
-  bn2, evs2 = mutilate(bn1, evs)
+  bn2, evs2 = conditionalModel(bn1, evs)
   print("  - Mutilation done")
 
   ie1 = gum.LazyPropagation(bn1)
@@ -46,7 +46,7 @@ def test2(bn1):
   print("=====")
 
   evs = {"HYPOVOLEMIA": 0, "CATECHOL": 1, "INTUBATION": 0}
-  bn2, evs2 = mutilate(bn1, evs)
+  bn2, evs2 = conditionalModel(bn1, evs)
 
   # HYPOVOLEMIA has no parent
   if "HYPOVOLEMIA" in evs2:
@@ -99,7 +99,7 @@ def test3(bn1):
   m = MonteCarlo(bn1, evs)
 
 
-# This file to test utils.mutilate
+# This file to test utils.conditionalModel
 def main():
   bn1 = gum.loadBN("data/alarm.bif")
   print("  - BN read")

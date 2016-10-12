@@ -11,10 +11,10 @@ class GenericInference:
   def __init__(self, bn, evs, verbose=True):
     self._originalbn = bn
     self._originalevs = evs
-    self._bn, self._evs = utils.mutilate(bn, evs)
+    self._bn, self._evs = utils.conditionalModel(bn, evs)
     self._verbose = verbose
     if self._verbose:
-      print("Mutilation done")
+      print("Conditioning done")
       print("  - dimension from {} to {}".format(self._originalbn.dim(), self._bn.dim()))
       print("  - evs from {} to {}".format(len(self._originalevs), len(self._evs)))
 

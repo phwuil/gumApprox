@@ -87,13 +87,13 @@ def isAlmostEqualPot(p1, p2):
   return r < 1e-5
 
 
-def mutilate(bn, evs):
+def conditionalModel(bn, evs):
   """
-  create a new bn from a bn and a instantication of some variable
+  create a new condtional bn from a bn and a instanticiation of some variable
 
-  :param bn:
-  :param evs:
-  :return:
+  :param bn: a bayesian network
+  :param evs: map of evidence
+  :return: a bayesian network
   """
   newbn = gum.BayesNet(bn)
   newevs = dict(evs)
@@ -115,3 +115,43 @@ def mutilate(bn, evs):
       newevs.pop(name)
 
   return newbn, newevs
+
+
+def mutilatedModel(bn, evs):
+  """
+  mutilate a bayesian network : remove all variable with evidence from the BN
+  :param bn: a bayesian network
+  :param evs: map of evidence
+  :return: a mutilated bayesian network
+  """
+  newbn, newevs = conditionalModel(bn, evs)  # now, all evidence has no children
+
+  for name in newevs:
+    newbn.erase(newbn.idFromName(name))
+
+  return newbn  # now, all evidence is removed from the bayesian network
+
+
+def unsharpenedModel(bn, value=0.1):
+  """
+  Modify the cpts of a BN in order to tend to uniform distributions
+
+  :param bn: a bayesian netwok
+  :param value: a value that will be added every where before normalization
+  :return: the newBN
+  """
+  newbn = gum.BayesNet(bn)
+  for i in newbn.ids():
+    newbn.cpt(i).translate(value).normalize()
+
+  return newbn
+
+
+def minParamInModel(bn):
+  """
+  return the smallest param in a bayesian network
+
+  :param bn: a bayesian network
+  :return: the smallest param
+  """
+  return min([bn.cpt(i).min() for i in bn.ids()])
