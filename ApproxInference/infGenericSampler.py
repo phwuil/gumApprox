@@ -9,14 +9,14 @@ class GenericInference:
   """
 
   def __init__(self, bn, evs, verbose=True):
-    self._originalbn = bn
-    self._originalevs = evs
+    self._originalBN = bn
+    self._originalEvs = evs
     self._bn, self._evs = utils.conditionalModel(bn, evs)
     self._verbose = verbose
     if self._verbose:
       print("Conditioning done")
-      print("  - dimension from {} to {}".format(self._originalbn.dim(), self._bn.dim()))
-      print("  - evs from {} to {}".format(len(self._originalevs), len(self._evs)))
+      print("  - dimension from {} to {}".format(self._originalBN.dim(), self._bn.dim()))
+      print("  - evs from {} to {}".format(len(self._originalEvs), len(self._evs)))
 
 
 class GenericSamplerInference(GenericInference):
@@ -30,19 +30,28 @@ class GenericSamplerInference(GenericInference):
                         bn.variable(i).name() not in evs}
 
   def posterior(self, i):
-    v = self._originalbn.variable(i)
+    """
+    return a posterior for node i
+
+    :param i: the nodeId
+    :return:  a gum.Potential
+    """
+    v = self._originalBN.variable(i)
     n = v.name()
-    if n in self._originalevs:
-      return utils.deterministicPotential(v, self._originalevs[n])
+    if n in self._originalEvs:
+      return utils.deterministicPotential(v, self._originalEvs[n])
     else:
       return self._estimators[i].value()
 
+  def results(self, i):
+    """
+    return the results for node i
+    :param i: the nodeId
+    :return: a pair (gum.Potential,confidence)
+    """
+    if self._originalBN.variable(i).name() in self._originalEvs:
+      return utils.deterministicPotential(self._originalBN.variable(i),
+                                          self._originalEvs[self._originalBN.variable(i).name()]), 1.0
 
-def results(self, i):
-  if self._originalbn.variable(i).name() in self._originalevs:
-    return utils.deterministicPotential(self._originalbn.variable(i),
-                                        self._originalevs[self._originalbn.variable(i).name()]) \
-      , 1.0
-  else:
-    return self._estimators[i].value() \
-      , self._estimators[i].confidence()
+    else:
+      return self._estimators[i].value(), self._estimators[i].confidence()

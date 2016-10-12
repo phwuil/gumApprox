@@ -19,20 +19,19 @@ class Importance(GenericSamplerInference):
     super().__init__(bn, evs, verbose)
 
     if sampler_bn is not None:
-      raise(NotImplementedError("Do not know how to use a given sampler_bn from now"))
+      raise (NotImplementedError("Do not know how to use a given sampler_bn from now"))
     else:
-      self._samplerBN=utils.mutilatedModel(self._bn,self._evs)
+      self._samplerBN = utils.mutilatedModel(self._bn, self._evs)
       if self._verbose:
         print("Mutilating sampler distribution")
-        print("  - dimension from {} to {}".format(self._originalbn.dim(), self._bn.dim()))
-        print("  - evs from {} to {}".format(len(self._originalevs), len(self._evs)))
+        print("  - dimension from {} to {}".format(self._bn.dim(), self._samplerBN.dim()))
 
-      minParam=utils.minParamInModel(self._samplerBN)
-      minAccepted=1e-3
-      if minParam<minAccepted:
-        utils.unsharpenedModel(self._samplerBN,minAccepted)
+      minParam = utils.minParamInModel(self._samplerBN)
+      minAccepted = 1e-2
+      if minParam < minAccepted:
+        utils.unsharpenedModel(self._samplerBN, minAccepted)
         if self._verbose:
-          print("Minimum parameter : {} => unsharpening sampler distribution".format(minParam))
+          print("Minimum parameter : {} => unsharpening sampler distribution to {}".format(minParam, minAccepted))
 
     self._nbrReject = 0
     self._nbr = 0
@@ -47,34 +46,27 @@ class Importance(GenericSamplerInference):
       currentPotentials = {}
       proba = {}
 
-      # simple sampling w.r.t. the BN
-      inst = {}
-      probaQ=1.0
-      probaP=1.0
-      for i in self._bn.topologicalOrder():
-        name = self._bn.variable(i).name()
-        q = gum.Potential(self._bn.cpt(i))
-        for j in self._bn.parents(i):
+      # simple sampling w.r.t. the samplerBN
+      inst = dict(self._originalEvs)
+      probaQ = 1.0
+      probaP = 1.0
+      for i in self._samplerBN.topologicalOrder():
+        name = self._samplerBN.variable(i).name()
+        q = gum.Potential(self._samplerBN.cpt(i))
+        for j in self._samplerBN.parents(i):
           q *= currentPotentials[j]
         q = q.margSumIn([name])
         inst[name], currentPotentials[i] = utils.draw(q)
         if name not in self._evs:
           proba[i] = q
-        probaQ*=
+        probaQ *= self._samplerBN.cpt(name)[inst]
+        probaP *= self._bn.cpt(name)[inst]
 
-      # forcing the value of evidence and compute the probability of this forces instance
-      globalProba = 1.0
-      for i in self._bn.topologicalOrder():
-        name = self._bn.variable(i).name()
-        if name in self._evs:
-          inst[name] = self._evs[name]
-          localp = self._bn.cpt(i)[inst]
-          if localp == 0:
-            return False
-          globalProba *= localp
+      if probaP == 0:
+        return False  # rejet
 
       for i in proba.keys():
-        estimators[i].add(proba[i], globalProba)
+        estimators[i].add(proba[i], probaP / probaQ)
       return True
 
     for i in range(size):
