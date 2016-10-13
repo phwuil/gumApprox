@@ -47,10 +47,10 @@ def draw(p):
   val = 0
   while not i.end():
     r -= p.get(i)
-    i.inc()
     if r <= 0:
       val = i.val(0)
       break
+    i.inc()
 
   return val, deterministicPotential(p.variable(0), val)
 
@@ -142,6 +142,7 @@ def unsharpenedModel(bn, value=0.1):
   """
   newbn = gum.BayesNet(bn)
   for i in newbn.ids():
+    # todo: we should only translate non zero value => 'translateNonZero' or (better) 'isNonZero' potential creator in aGrUM
     newbn.cpt(i).translate(value).normalize()
 
   return newbn
@@ -154,4 +155,5 @@ def minParamInModel(bn):
   :param bn: a bayesian network
   :return: the smallest param
   """
+  # todo: add MinNonZero in aGrUM
   return min([bn.cpt(i).min() for i in bn.ids()])

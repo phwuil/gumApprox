@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import random
+
 from . import utils
 from .probabilityEstimator import ProbabilityEstimator
 
@@ -9,6 +11,7 @@ class GenericInference:
   """
 
   def __init__(self, bn, evs, verbose=True):
+    random.seed()
     self._originalBN = bn
     self._originalEvs = evs
     self._bn, self._evs = utils.conditionalModel(bn, evs)
