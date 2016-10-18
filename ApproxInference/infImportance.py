@@ -7,39 +7,38 @@ from .probabilityEstimator import ProbabilityEstimator
 
 
 class Importance(GenericSamplerInference):
-  def __init__(self, bn, evs, sampler_bn=None, verbose=True):
+  def __init__(self, bn, evs, epsilon, verbose=True):
     """
     Importance sampling on bn with evs using the sampling distribution samplerBN
 
     :param bn: a bayesian network
     :param evs: map of evidence
-    :param sampler_bn: the sampling bayesian network.
+    :param epsilon: the value used to 'unsharpen' the BN
     :param verbose:
     """
     super().__init__(bn, evs, verbose)
 
-    if sampler_bn is not None:
-      raise (NotImplementedError("Do not know how to use a given sampler_bn from now"))
-    else:
-      self._samplerBN = utils.mutilatedModel(self._bn, self._evs)
+    self._samplerBN = utils.mutilatedModel(self._bn, self._evs)
+    if self._verbose:
+      print("Mutilating sampler distribution")
+      print("  - dimension from {} to {}".format(self._bn.dim(), self._samplerBN.dim()))
+
+    minParam = self._samplerBN.minNonZeroParam()
+    minAccepted = epsilon/bn.maxVarDomainSize()
+    if minParam < minAccepted:
+      utils.unsharpenedModel(self._samplerBN, minAccepted)
       if self._verbose:
-        print("Mutilating sampler distribution")
-        print("  - dimension from {} to {}".format(self._bn.dim(), self._samplerBN.dim()))
+        print("Minimum parameter : {} => unsharpening sampler distribution to {}".format(minParam, minAccepted))
 
-      minParam = utils.minParamInModel(self._samplerBN)
-      minAccepted = 1e-2
-      if minParam < minAccepted:
-        utils.unsharpenedModel(self._samplerBN, minAccepted)
-        if self._verbose:
-          print("Minimum parameter : {} => unsharpening sampler distribution to {}".format(minParam, minAccepted))
-
+    self._estimators = {i: ProbabilityEstimator(self._samplerBN.variable(i)) for i in self._samplerBN.ids() if
+                        self._samplerBN.variable(i).name() not in evs}
     self._nbrReject = 0
     self._nbr = 0
 
   def multipleRound(self, size=1000):
-    estimators = {i: ProbabilityEstimator(self._bn.variable(i))
-                  for i in self._bn.ids()
-                  if self._bn.variable(i).name() not in self._evs}
+    estimators = {i: ProbabilityEstimator(self._samplerBN.variable(i))
+                  for i in self._samplerBN.ids()
+                  if self._samplerBN.variable(i).name() not in self._evs}
 
     def oneRound():
       self._nbr += 1

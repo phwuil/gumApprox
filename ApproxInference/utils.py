@@ -132,28 +132,20 @@ def mutilatedModel(bn, evs):
   return newbn  # now, all evidence is removed from the bayesian network
 
 
-def unsharpenedModel(bn, value=0.1):
+def unsharpenedModel(bn, epsilon=1e-2):
   """
   Modify the cpts of a BN in order to tend to uniform distributions
 
   :param bn: a bayesian netwok
-  :param value: a value that will be added every where before normalization
+  :param epsilon: a value that will be added every where before normalization
   :return: the newBN
   """
-  newbn = gum.BayesNet(bn)
-  for i in newbn.ids():
-    # todo: we should only translate non zero value => 'translateNonZero' or (better) 'isNonZero' potential creator in aGrUM
-    newbn.cpt(i).translate(value).normalize()
+  if bn.minNonZeroParam() < epsilon:
+    newbn = gum.BayesNet(bn)
+    for k in newbn.ids():
+      # adding epsilon on all non-zero value, and normalize as CPT again
+      newbn.cpt(k)[:] = (newbn.cpt(k).isNonZeroMap().scale(epsilon) + newbn.cpt(k)).normalizeAsCPT()[:]
+  else:
+    newbn = bn
 
   return newbn
-
-
-def minParamInModel(bn):
-  """
-  return the smallest param in a bayesian network
-
-  :param bn: a bayesian network
-  :return: the smallest param
-  """
-  # todo: add MinNonZero in aGrUM
-  return min([bn.cpt(i).min() for i in bn.ids()])

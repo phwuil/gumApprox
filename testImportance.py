@@ -11,11 +11,12 @@ def main():
 
   evs = {"HR": 1, "PAP": 2}
 
-  m = Importance(bn, evs, verbose=True)
-  m.run(5e-2, 50)
+  m = Importance(bn, evs, epsilon=0.2, verbose=True)
+  m.run(1e-2, 100)
   print("done")
 
   testUtils.compareApprox(m, bn, evs)
+  print(m.posterior(1))
 
 
 if __name__ == '__main__':
