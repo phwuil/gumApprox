@@ -43,6 +43,7 @@ def testRandom():
     particle.add(q)
   print("with {} draws, results are".format(particle._nbr))
   print(particle.value())
+  print("    {}".format(particle.confidence()))
 
 if __name__ == '__main__':
   testRandom()

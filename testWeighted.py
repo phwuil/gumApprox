@@ -12,7 +12,7 @@ def main():
   evs = {"HR": 1, "PAP": 2}
 
   m = Weighted(bn, evs, verbose=True)
-  m.run(1e-2, 50)
+  m.run(1e-2, 200)
   print("done")
 
   testUtils.compareApprox(m, bn, evs)

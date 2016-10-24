@@ -12,6 +12,9 @@ class GenericInference:
 
   def __init__(self, bn, evs, verbose=True):
     random.seed()
+    if verbose:
+      print("Initiazing random sampler : {}".format(random.random()))
+
     self._originalBN = bn
     self._originalEvs = evs
     self._bn, self._evs = utils.conditionalModel(bn, evs)

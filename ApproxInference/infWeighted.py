@@ -39,11 +39,12 @@ class Weighted(GenericSamplerInference):
       for i in self._bn.topologicalOrder():
         name = self._bn.variable(i).name()
         if name in self._evs:
-          inst[name] = self._evs[name]
-          localp = self._bn.cpt(i)[inst]
-          if localp == 0:
-            return False
-          globalProba *= localp
+          if inst[name] != self._evs[name]:
+            inst[name] = self._evs[name]
+            localp = self._bn.cpt(i)[inst]
+            if localp == 0:
+              return False
+            globalProba *= localp
 
       for i in proba.keys():
         estimators[i].add(proba[i], globalProba)
