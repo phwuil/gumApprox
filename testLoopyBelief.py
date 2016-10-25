@@ -3,7 +3,7 @@ import pyAgrum as gum
 
 import testUtils
 from ApproxInference import LoopyBeliefPropagation
-
+from ApproxInference.utils import compactPot
 
 def main():
   bn = gum.loadBN("data/alarm.bif")
@@ -17,6 +17,22 @@ def main():
 
   testUtils.compareApprox(m, bn, evs)
 
+
+def test():
+  bn = gum.fastBN("a->b->c;", 3)
+  evs = {}
+
+  m = LoopyBeliefPropagation(bn, evs, verbose=True)
+
+  def traceMsg():
+    print("\n\n")
+    print("   {}->    {}->".format(compactPot(m._messages[0, 1]), compactPot(m._messages[1, 2])))
+    print("a ------------------------------> b ------------------------------> c")
+    print("   <-{}    <-{}".format(compactPot(m._messages[1, 0]), compactPot(m._messages[2, 1])))
+
+  traceMsg()
+  m.updateNodeMessages(2)
+  traceMsg()
 
 if __name__ == '__main__':
   main()

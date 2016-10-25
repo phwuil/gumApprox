@@ -19,6 +19,9 @@ class LoopyBeliefPropagation(GenericInference):
       nid = self._bn.idFromName(a)
       self._messages[-1, nid] = utils.deterministicPotential(self._bn.variable(nid), evs[a])
 
+    for i in self._bn.topologicalOrder():
+      self.updateNodeMessages(i)
+
     # we need a list of ids we can shuffle
     self._shuffledIds = list(self._bn.ids())
 
@@ -29,8 +32,6 @@ class LoopyBeliefPropagation(GenericInference):
       if par != nodeExcept:
         piX = piX * self._messages[par, nodeX]
 
-    if piX.sum() == 0:
-      print(piX)
     return piX
 
   def _computeProdLambda(self, nodeX, nodeExcept=None):
@@ -41,7 +42,7 @@ class LoopyBeliefPropagation(GenericInference):
       lamX = gum.Potential().add(varX).fillWith(1.0)
     for child in self._bn.children(nodeX):
       if child != nodeExcept:
-        lamX = lamX * self._messages[nodeX, child]
+        lamX = lamX * self._messages[child, nodeX]
     return lamX
 
   def updateNodeMessages(self, nodeX):
@@ -54,7 +55,7 @@ class LoopyBeliefPropagation(GenericInference):
     varX = self._bn.variable(nodeX)
 
     piX = self._computeProdPi(nodeX)
-    piX = piX.margMaxIn([varX.name()])
+    piX = piX.margSumIn([varX.name()])
 
     lamX = self._computeProdLambda(nodeX)
 
@@ -63,36 +64,29 @@ class LoopyBeliefPropagation(GenericInference):
 
     # update lambda_par (for arc par->x)
     for par in self._bn.parents(nodeX):
-      newMsg = self._computeProdPi(nodeX, par)
-      newMsg = newMsg.margMaxIn([varX.name(), self._bn.variable(par).name()]) * lamX
-      newMsg = newMsg.margMaxOut([varX.name()]).normalize()
+      newLambda = self._computeProdPi(nodeX, par)
+      newLambda = newLambda.margSumIn([varX.name(), self._bn.variable(par).name()]) * lamX
+      newLambda = newLambda.margSumOut([varX.name()])
 
-      diff = utils.KL(newMsg, self._messages[nodeX, par])
+      diff = utils.KL(newLambda, self._messages[nodeX, par])
       if diff > KL:
         KL = diff
         argKL = (nodeX, par)
 
-      self._messages[nodeX, par] = newMsg
-      # if self._verbose:
-      #  print("lambda {}<-{} : {}".format(self._bn.variable(nodeX).name(),
-      #                                    self._bn.variable(par).name(),
-      #                                    utils.compactPot(newMsg)))
+      self._messages[nodeX, par] = newLambda
 
     # update pi_child (for arc x->child)
     for child in self._bn.children(nodeX):
       # lamX except lam(chi)
-      newMsg = (piX * self._computeProdLambda(nodeX, child)).normalize()
+      newPi = (piX * self._computeProdLambda(nodeX, child)).normalize()
 
-      diff = utils.KL(newMsg, self._messages[nodeX, child])
+      diff = utils.KL(newPi, self._messages[nodeX, child])
       if diff > KL:
         KL = diff
         argKL = (nodeX, child)
 
-      self._messages[nodeX, child] = newMsg
-      # if self._verbose:
-      #  print("pi {}->{} : {}".format(self._bn.variable(nodeX).name(),
-      #                                self._bn.variable(child).name(),
-      #                                utils.compactPot(newMsg)))
+      self._messages[nodeX, child] = newPi
+
     # return the KL max
     return KL, argKL
 
@@ -137,7 +131,7 @@ class LoopyBeliefPropagation(GenericInference):
         return maxKL, argMaxKL
 
   def posterior(self, nodeX):
-    p = self._computeProdPi(nodeX).margMaxIn([self._bn.variable(nodeX).name()])
+    p = self._computeProdPi(nodeX).margSumIn([self._bn.variable(nodeX).name()])
     p = p * self._computeProdLambda(nodeX)
     p.normalize()
 

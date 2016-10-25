@@ -82,7 +82,7 @@ def compactPot(p):
   i = gum.Instantiation(p)
   i.setFirst()
   while not i.end():
-    res += "|{:7.5f}".format(100 * p.get(i))
+    res += "|{:8.4f}".format(100 * p.get(i))
     i.inc()
   return "[" + res[1:] + "]"
 
