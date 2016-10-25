@@ -6,6 +6,12 @@ import pyAgrum as gum
 
 
 def deterministicPotential(v, val):
+  """
+  Create a deterministic potential for the variable v and the value val
+  :param v: gum.DiscreteVariable
+  :param val: value of v
+  :return: gum.Potential create"d
+  """
   l = [0] * v.domainSize()
   l[val] = 1
   return gum.Potential().add(v).fillWith(l)
@@ -28,7 +34,14 @@ def KL(p, q):
   s = 0
   while not Ip.end():
     if p.get(Ip) > 0:
-      s += p.get(Ip) * math.log2(p.get(Ip) / q.get(Iq))
+      if q.get(Iq) > 0:
+        s += p.get(Ip) * math.log2(p.get(Ip) / q.get(Iq))
+      else:
+        s += 1  # we penalize q==0 and p>0
+    else:
+      if q.get(Iq) > 0:
+        s += 1  # we penalize q>0 and p==0
+
     Ip.inc()
     Iq.inc()
 

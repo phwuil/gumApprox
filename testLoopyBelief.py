@@ -12,11 +12,10 @@ def main():
   evs = {"HR": 1, "PAP": 2}
 
   m = LoopyBeliefPropagation(bn, evs, verbose=True)
-  m.run(1e-2, 100)
+  m.run(1e-5, 50)
   print("done")
 
   testUtils.compareApprox(m, bn, evs)
-  print(m.posterior(1))
 
 
 if __name__ == '__main__':

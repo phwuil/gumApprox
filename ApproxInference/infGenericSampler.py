@@ -24,6 +24,12 @@ class GenericInference:
       print("  - dimension from {} to {}".format(self._originalBN.dim(), self._bn.dim()))
       print("  - evs from {} to {}".format(len(self._originalEvs), len(self._evs)))
 
+  def posterior(self, i):
+    raise NotImplementedError("posteriori(self,i) has to be implemented by your inference")
+
+  def results(self, i):
+    return self.posterior(i), -1  # complete unconfidence
+
 
 class GenericSamplerInference(GenericInference):
   """
