@@ -120,6 +120,7 @@ def conditionalModel(bn, evs):
       # erase arc
       newbn.eraseArc(nid, ch)
       # update cpt
+      # todo : add a Potential::fillWithParamOF(Potential) in agrum
       newbn.cpt(ch)[:] = q[:]
 
     # remove evidence without parent

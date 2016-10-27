@@ -3,7 +3,6 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/gumApprox.iml" filepath="$PROJECT_DIR$/.idea/gumApprox.iml" />
-      <module fileurl="file://$PROJECT_DIR$/../../lip6/aGrUM-dev/wrappers/pyAgrum/lib/.idea/lib.iml" filepath="$PROJECT_DIR$/../../lip6/aGrUM-dev/wrappers/pyAgrum/lib/.idea/lib.iml" />
     </modules>
   </component>
 </project>

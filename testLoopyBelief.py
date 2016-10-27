@@ -34,5 +34,15 @@ def test():
   m.updateNodeMessages(2)
   traceMsg()
 
+def testCedric():
+  print("loading ...")
+  bn=gum.loadBN("data/fichier_nan.bif")
+  print("done")
+  scenario = {'E7.ValueEE': 6}
+  m = LoopyBeliefPropagation(bn, scenario, verbose=True)
+  print("running ...")
+  m.run(4e-1, 2)
+  print("done")
+
 if __name__ == '__main__':
-  main()
+  testCedric()
