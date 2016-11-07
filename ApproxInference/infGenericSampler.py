@@ -25,7 +25,21 @@ class GenericInference:
       print("  - evs from {} to {}".format(len(self._originalEvs), len(self._evs)))
 
   def posterior(self, i):
-    raise NotImplementedError("posteriori(self,i) has to be implemented by your inference")
+    """
+    return a posterior for node i
+
+    :param i: the nodeId
+    :return:  a gum.Potential
+    """
+    v = self._originalBN.variable(i)
+    n = v.name()
+    if n in self._originalEvs:
+      return utils.deterministicPotential(v, self._originalEvs[n])
+    else:
+      return self._posterior(i)
+
+  def _posterior(self, i):
+    raise NotImplementedError("_posteriori(self,i) has to be implemented by your inference")
 
   def results(self, i):
     return self.posterior(i), -1  # complete unconfidence
@@ -41,7 +55,7 @@ class GenericSamplerInference(GenericInference):
     self._estimators = {i: ProbabilityEstimator(self._bn.variable(i)) for i in self._bn.ids() if
                         bn.variable(i).name() not in evs}
 
-  def posterior(self, i):
+  def _posterior(self, i):
     """
     return a posterior for node i
 
@@ -50,10 +64,7 @@ class GenericSamplerInference(GenericInference):
     """
     v = self._originalBN.variable(i)
     n = v.name()
-    if n in self._originalEvs:
-      return utils.deterministicPotential(v, self._originalEvs[n])
-    else:
-      return self._estimators[i].value()
+    return self._estimators[i].value()
 
   def results(self, i):
     """

@@ -130,7 +130,7 @@ class LoopyBeliefPropagation(GenericInference):
       if maxKL < epsilon:
         return maxKL, argMaxKL
 
-  def posterior(self, nodeX):
+  def _posterior(self, nodeX):
     p = self._computeProdPi(nodeX).margSumIn([self._bn.variable(nodeX).name()])
     p = p * self._computeProdLambda(nodeX)
     p.normalize()
