@@ -6,13 +6,13 @@ from ApproxInference import LoopyBeliefPropagation
 from ApproxInference.utils import compactPot
 
 def main():
-  bn = gum.loadBN("data/alarm.bif")
+  bn = gum.loadBN("data/loopyOut.bif")
   print("BN read")
 
-  evs = {"HR": 1, "PAP": 2}
+  scenario = {'E5.ValueEE': 6, 'E3.ValueEE': 6}  # ,'E1.ValueEE':3,'E2.ValueEE':3,'E4.ValueEE':3,'Ac3.Duration':6}
 
-  m = LoopyBeliefPropagation(bn, evs, verbose=True)
-  m.run(1e-5, 50)
+  m = LoopyBeliefPropagation(bn, scenario, verbose=True)
+  m.run(3e-2,50)
   print("done")
 
   testUtils.compareApprox(m, bn, evs)
@@ -45,4 +45,5 @@ def testCedric():
   print("done")
 
 if __name__ == '__main__':
-  testCedric()
+  #testCedric()
+  main()

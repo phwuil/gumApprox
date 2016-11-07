@@ -14,7 +14,7 @@ class LoopyBeliefPropagation(GenericInference):
     for a, b in self._bn.arcs():
       self._messages[a, b] = gum.Potential().add(self._bn.variable(a)).fillWith(1).normalize()
       self._messages[b, a] = gum.Potential().add(self._bn.variable(a)).fillWith(1)
-    for a in evs:
+    for a in self._evs:
       print("evidence {}:{}".format(a, evs[a]))
       nid = self._bn.idFromName(a)
       self._messages[-1, nid] = utils.deterministicPotential(self._bn.variable(nid), evs[a])
