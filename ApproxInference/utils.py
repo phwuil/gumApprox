@@ -116,7 +116,7 @@ def conditionalModel(bn, evs):
       # create the new cpt
       q = newbn.cpt(ch) \
         .extract({name: evs[name]}) \
-        .reorganize([v.name() for v in bn.cpt(ch).variablesSequence() if v.name() != name])
+        .reorganize([v.name() for v in newbn.cpt(ch).variablesSequence() if v.name() != name])
       # erase arc
       newbn.eraseArc(nid, ch)
       # update cpt
