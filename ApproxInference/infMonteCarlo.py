@@ -35,7 +35,7 @@ class MonteCarlo(GenericSamplerInference):
         else:
           proba[i] = q
       for i in proba.keys():
-        estimators[i].add(proba[i])
+        estimators[i].add(currentPotentials[i])
       return True
 
     for i in range(size):

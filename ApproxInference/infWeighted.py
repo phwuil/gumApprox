@@ -47,7 +47,7 @@ class Weighted(GenericSamplerInference):
             globalProba *= localp
 
       for i in proba.keys():
-        estimators[i].add(proba[i], globalProba)
+        estimators[i].add(currentPotentials[i], globalProba)
       return True
 
     for i in range(size):
