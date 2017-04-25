@@ -3,8 +3,6 @@
   <component name="ChangeListManager">
     <list default="true" id="f96d8eeb-f920-4376-9d3c-e550e9c3d1e3" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ApproxInference/infImportance.py" afterPath="$PROJECT_DIR$/ApproxInference/infImportance.py" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/testErr.py" afterPath="$PROJECT_DIR$/testErr.py" />
     </list>
     <ignored path="gumApprox.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -464,7 +462,14 @@
       <option name="project" value="LOCAL" />
       <updated>1493133413814</updated>
     </task>
-    <option name="localTasksCounter" value="6" />
+    <task id="LOCAL-00006" summary="Bug in Importance/MonteCarlo and Weighted sampling (2)">
+      <created>1493133484041</created>
+      <option name="number" value="00006" />
+      <option name="presentableId" value="LOCAL-00006" />
+      <option name="project" value="LOCAL" />
+      <updated>1493133484041</updated>
+    </task>
+    <option name="localTasksCounter" value="7" />
     <servers />
   </component>
   <component name="TodoView">
@@ -547,7 +552,8 @@
     <MESSAGE value="ImportanceSampler seems to be correct" />
     <MESSAGE value="LoppyBelief in proress" />
     <MESSAGE value="Bug in Importance/MonteCarlo and Weighted sampling" />
-    <option name="LAST_COMMIT_MESSAGE" value="Bug in Importance/MonteCarlo and Weighted sampling" />
+    <MESSAGE value="Bug in Importance/MonteCarlo and Weighted sampling (2)" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug in Importance/MonteCarlo and Weighted sampling (2)" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
