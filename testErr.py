@@ -16,7 +16,6 @@ ie = gum.LazyPropagation(bn_test)
 ie.setEvidence(scenario)
 ie.makeInference()
 
-"""
 ieLB = gum.LoopyBeliefPropagation(bn_test)
 ieLB.setEvidence(scenario)
 ieLB.makeInference()
@@ -28,15 +27,11 @@ ieG.makeInference()
 ieM = MonteCarlo(bn_test, scenario)
 ieM.run(3e-2, 50)
 
-"""
 ieI = Importance(bn_test, scenario, epsilon=0.1, verbose=True)
 ieI.run(1e-2, 100)
 
 print('Lazy', ie.posterior(bn_test.idFromName("O.Productivity")))
-"""
 print('Loopy', ieLB.posterior(bn_test.idFromName("O.Productivity")))
 print('Gibbs', ieG.posterior(bn_test.idFromName("O.Productivity")))
 print('Montecarlo', ieM.posterior(bn_test.idFromName("O.Productivity")))
-"""
-
 print('Importance', ieI.posterior(bn_test.idFromName("O.Productivity")))

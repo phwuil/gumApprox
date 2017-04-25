@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import pyAgrum as gum
-from pyAgrum.lib.bn2graph import pdfize
 
 from . import utils
 from .infGenericSampler import GenericSamplerInference
@@ -30,7 +29,6 @@ class Importance(GenericSamplerInference):
       utils.unsharpenedModel(self._samplerBN, minAccepted)
       if self._verbose:
         print("Minimum parameter : {} => unsharpening sampler distribution to {}".format(minParam, minAccepted))
-    pdfize(self._samplerBN, "test2.pdf")
 
     self._estimators = {i: ProbabilityEstimator(self._samplerBN.variable(i)) for i in self._samplerBN.ids() if
                         self._samplerBN.variable(i).name() not in evs}
